@@ -3,6 +3,7 @@ package edu.uri.david_h_brown.laser_scarecrow;
 /**
  * A Parameter is implemented in the Laser Scarecrow command protocol
  * using a nonnegative code number that is unique to that parameter.
+ *
  * @link https://docs.google.com/document/d/1BEQdWz1lOl8SjxaDAI5R47IBIe5X4mZlMuOE-zMSdLE/
  * To read a parameter, for example, wake/sleep via light or RTC (code 201),
  * the string "L201\n" is sent to the Bluetooth serial port. The response is the code, a
@@ -11,53 +12,60 @@ package edu.uri.david_h_brown.laser_scarecrow;
  * response "ok\n" indicates success; "error(#)\n" otherwise; # is an integer.
  */
 public class Parameter {
-    private static final char EOL='\n';
-    private static final char SPACE=' ';
     public enum Name {
-        ROTATION_SPEED,
-        SERVO_PULSE_MINIMUM,
-        SERVO_PULSE_RANGE,
-        WAKE_SLEEP_CYCLE_CONTROL,
-        LIGHT_SENSOR_THRESHOLD,
-        RTC_WAKE_TIME,
-        RTC_SLEEP_TIME,
-        RTC_CURRENT_TIME,
-        RTC_CURRENT_DATE,
+        ROTATION_SPEED(101),
+        SERVO_PULSE_MINIMUM(131),
+        SERVO_PULSE_RANGE(132),
+        WAKE_SLEEP_CYCLE_CONTROL(201),
+        LIGHT_SENSOR_THRESHOLD(221),
+        RTC_WAKE_TIME(261),
+        RTC_SLEEP_TIME(262),
+        RTC_CURRENT_TIME(251),
+        RTC_CURRENT_DATE(252);
+        private int code;
+
+        Name(int code) {
+            this.code = code;
+        }
+
+        public int code() {
+            return code;
+        }
+
     }
+
     private Parameter.Name pName;
     private String btValue; // as represented in the serial command protocol
-    private int code;
     private ParameterConverter ui2bt;
     private ParameterConverter bt2ui;
 
     /**
      * Use the long form to specify non-default parameter converters
+     *
      * @param pName the Parameter.Name of this parameter
-     * @param code the BT protocol code of this parameter
      * @param ui2bt the ParameterConverter to map from UI widget strings to BT serial strings
      * @param bt2ui the ParameterConverter to map from BT serial strings to UI Widget strings
      */
-    public Parameter(Parameter.Name pName, int code, ParameterConverter ui2bt, ParameterConverter bt2ui)
-    {
-        this.pName=pName;
-        this.code=code;
-        this.ui2bt=ui2bt;
-        this.bt2ui=bt2ui;
+    public Parameter(Parameter.Name pName, ParameterConverter ui2bt, ParameterConverter bt2ui) {
+        this.pName = pName;
+        this.ui2bt = ui2bt;
+        this.bt2ui = bt2ui;
     }
 
     /**
      * Use the short form to use the default ParameterConverterIntegerUnchanged btValue conversions
-     * @see ParameterConverterIntegerUnchanged
+     *
      * @param pName the Parameter.Name of this parameter
-     * @param code the command protocol code of this parameter
+     * @see ParameterConverterIntegerUnchanged
      */
-    public Parameter(Parameter.Name pName, int code)
-    {
-        this(pName, code, new ParameterConverterIntegerUnchanged(), new ParameterConverterIntegerUnchanged());
+    public Parameter(Parameter.Name pName) {
+        this(pName, new ParameterConverterIntegerUnchanged(), new ParameterConverterIntegerUnchanged());
     }
-    public final String convertUi2Bt(String s){
+
+    public final String convertUi2Bt(String s) {
         return ui2bt.convert(s);
     }
+
     public final String convertBt2Ui(String s) {
         return bt2ui.convert(s);
     }
@@ -69,12 +77,23 @@ public class Parameter {
     public String getBtValue() {
         return btValue;
     }
+
     public String getUiValue() {
         return convertBt2Ui(btValue);
     }
 
-    public int getCode() {
-        return code;
+    public Parameter setFromBt(String s) {
+        btValue = s;
+        return this;
+    }
+
+    public Parameter setFromUi(String s) {
+        btValue = convertUi2Bt(s);
+        return ParameterBtAdapter.sendStore(this);
+    }
+
+    public int code() {
+        return pName.code;
     }
 
     public void setUi2bt(ParameterConverter ui2bt) {
@@ -85,38 +104,5 @@ public class Parameter {
         this.bt2ui = bt2ui;
     }
 
-    /**
-     * Reads the btValue from serial, saves in btValue and returns same
-     * @return btValue
-     */
-    public Parameter readFromBt(){
-        StringBuilder message = new StringBuilder("L");
-        message.append(code);
-        message.append(EOL);
 
-        /* @todo send message via BT serial */
-        StringBuilder response = new StringBuilder();
-        /* @todo read BT serial into response */
-        response.append("");
-        btValue = response.toString();
-        return this;
-    }
-    public Parameter setFromUi(String s){
-        btValue=convertUi2Bt(s);
-        return sendToBt();
-    }
-
-    public Parameter sendToBt(){
-        StringBuilder message = new StringBuilder("S");
-        message.append(code);
-        message.append(SPACE);
-        message.append(btValue);
-        message.append(EOL);
-        /* @todo send message via BT serial */
-        StringBuilder response = new StringBuilder();
-        /* @todo read BT serial into response */
-        response.append("");
-        /* @todo confirm ok or throw runtime error */
-        return this;
-    }
 }
