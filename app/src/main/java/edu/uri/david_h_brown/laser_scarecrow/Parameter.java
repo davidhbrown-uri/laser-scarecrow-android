@@ -12,29 +12,8 @@ package edu.uri.david_h_brown.laser_scarecrow;
  * response "ok\n" indicates success; "error(#)\n" otherwise; # is an integer.
  */
 public class Parameter {
-    public enum Name {
-        ROTATION_SPEED(101),
-        SERVO_PULSE_MINIMUM(131),
-        SERVO_PULSE_RANGE(132),
-        WAKE_SLEEP_CYCLE_CONTROL(201),
-        LIGHT_SENSOR_THRESHOLD(221),
-        RTC_WAKE_TIME(261),
-        RTC_SLEEP_TIME(262),
-        RTC_CURRENT_TIME(251),
-        RTC_CURRENT_DATE(252);
-        private int code;
 
-        Name(int code) {
-            this.code = code;
-        }
-
-        public int code() {
-            return code;
-        }
-
-    }
-
-    private Parameter.Name pName;
+    private ParameterName pName;
     private String btValue; // as represented in the serial command protocol
     private ParameterConverter ui2bt;
     private ParameterConverter bt2ui;
@@ -46,7 +25,7 @@ public class Parameter {
      * @param ui2bt the ParameterConverter to map from UI widget strings to BT serial strings
      * @param bt2ui the ParameterConverter to map from BT serial strings to UI Widget strings
      */
-    public Parameter(Parameter.Name pName, ParameterConverter ui2bt, ParameterConverter bt2ui) {
+    public Parameter(ParameterName pName, ParameterConverter ui2bt, ParameterConverter bt2ui) {
         this.pName = pName;
         this.ui2bt = ui2bt;
         this.bt2ui = bt2ui;
@@ -58,7 +37,7 @@ public class Parameter {
      * @param pName the Parameter.Name of this parameter
      * @see ParameterConverterIntegerUnchanged
      */
-    public Parameter(Parameter.Name pName) {
+    public Parameter(ParameterName pName) {
         this(pName, new ParameterConverterIntegerUnchanged(), new ParameterConverterIntegerUnchanged());
     }
 
@@ -70,7 +49,7 @@ public class Parameter {
         return bt2ui.convert(s);
     }
 
-    public Name pName() {
+    public ParameterName pName() {
         return pName;
     }
 
@@ -93,7 +72,7 @@ public class Parameter {
     }
 
     public int code() {
-        return pName.code;
+        return pName.code();
     }
 
     public void setUi2bt(ParameterConverter ui2bt) {

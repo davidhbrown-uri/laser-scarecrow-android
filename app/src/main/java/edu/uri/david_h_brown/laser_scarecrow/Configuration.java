@@ -7,7 +7,7 @@ import android.util.SparseArray;
  */
 public class Configuration {
     private static Configuration instance = null;
-    private java.util.HashMap<Parameter.Name, Parameter> parametersByName;
+    private java.util.HashMap<ParameterName, Parameter> parametersByName;
     private SparseArray<Parameter> parametersByCode;
 
     private Configuration() {
@@ -35,7 +35,7 @@ public class Configuration {
         parametersByCode.put(p.code(), p);
     }
 
-    public Parameter getParameter(Parameter.Name pName) {
+    public Parameter getParameter(ParameterName pName) {
         if (!parametersByName.containsKey(pName)) {
             throw new RuntimeException();
             /* @todo write a more specific exception to throw */
@@ -52,7 +52,7 @@ public class Configuration {
         return parametersByCode.valueAt(index);
     }
 
-    public void setParameterValueFromUi(Parameter.Name pName, String value) {
+    public void setParameterValueFromUi(ParameterName pName, String value) {
         getParameter(pName).setFromUi(value);
     }
 }

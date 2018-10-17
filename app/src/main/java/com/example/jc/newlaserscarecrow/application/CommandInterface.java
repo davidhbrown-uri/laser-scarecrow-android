@@ -2,6 +2,7 @@ package com.example.jc.newlaserscarecrow.application;
 
 /**
  * Created by Andrew on 3/5/18.
+ * @see edu.uri.david_h_brown.laser_scarecrow.ParameterName for a different approach; need to reconcile
  */
 
 public interface CommandInterface
