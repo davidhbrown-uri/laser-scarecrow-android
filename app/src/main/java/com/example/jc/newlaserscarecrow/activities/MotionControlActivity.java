@@ -24,6 +24,8 @@ import com.example.jc.newlaserscarecrow.application.DevDataTransfer;
 
 import java.util.Map;
 
+import edu.uri.david_h_brown.laser_scarecrow.CommandString;
+
 public class MotionControlActivity extends Fragment implements CommandInterface {
     private static final String TAG = "motionControlActivity";
     private int[] newValues;
@@ -89,21 +91,21 @@ public class MotionControlActivity extends Fragment implements CommandInterface 
         minButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                BluetoothService.write(mContext, CommandString.SERVO_GO_MINIMUM.toString());
             }
         });
         midButton = view.findViewById(R.id.midButton);
         midButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                BluetoothService.write(mContext, CommandString.SERVO_GO_MIDDLE.toString());
             }
         });
         maxButton = view.findViewById(R.id.maxButton);
         maxButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                BluetoothService.write(mContext, CommandString.SERVO_GO_MAXIMUM.toString());
             }
         });
         applyButton = view.findViewById(R.id.applyButton);
